@@ -4,11 +4,13 @@ const jwt = require('jsonwebtoken')
 
 const auth = deps => {
   return {
-    authenticate: (email, password) => {
+    authenticate: (cim, password) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
-        const queryString = 'SELECT id, email FROM users WHERE email = ? AND senha = ?'
-        const queryData = [email, sha1(password)]
+        const queryString = 'SELECT id, email FROM users WHERE cim = ? AND password = ?'
+        const queryData = [cim, sha1(password)]
+
+        console.log(queryData)
 
         connection.query(queryString, queryData, (error, results) => {
           if (error || !results.length) {
@@ -24,7 +26,59 @@ const auth = deps => {
             { expiresIn: 60 * 60 * 24 }
           )
 
-          resolve({ token })
+          resolve({ token, id: results[0].id })
+        })
+      })
+    },
+    sessao: () => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('select id as sessaoid from sessaos where ativo = 1', (error, results) => {
+          if (error) {
+            errorHandler(error, 'Falha ao identificar a sessão ativa.', reject)
+            return false
+          }
+          resolve(results)
+        })
+      })
+    },
+    dispositivo: (cim) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('select cim, uuid, modelo from user_device where cim = ? and ativo = 1', [cim], (error, results) => {
+          if (error) {
+            errorHandler(error, 'Falha ao identificar o disponitivo.', reject)
+            return false
+          }
+          resolve(results)
+        })
+      })
+    },
+    dispositivosave: (cim, uuid, modelo, plataforma, versao) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('insert into user_device (cim, uuid, created_at, updated_at, modelo, plataforma, versao, ativo) values (?, ?, current_date(), current_date(), ?, ?, ?, 1)', [cim, uuid, modelo, plataforma, versao], (error, results) => {
+          if (error) {
+            errorHandler(error, `Falha ao salvar o dispositivo.`, reject)
+            return false
+          }
+          resolve({})
+        })
+      })
+    },
+    presenca: (userid, sessaoid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('select id_usuario from presencas where id_usuario = ? and id_sessao = ?', [userid, sessaoid], (error, results) => {
+          if (error) {
+            errorHandler(error, `Falha ao identificar a presença.`, reject)
+            return false
+          }
+          resolve({results})
         })
       })
     }

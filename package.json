@@ -25,5 +25,7 @@
     "restify-cors-middleware": "^1.0.1",
     "sha1": "^1.1.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "bcrypt": "^2.0.1"
+  }
 }

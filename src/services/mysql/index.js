@@ -18,9 +18,13 @@ const dependencies = { connection, errorHandler }
 const authModule = require('./auth')(dependencies)
 const systemModule = require('./system')(dependencies)
 const votationModule = require('./votation')(dependencies)
+const usersModule = require('./users')(dependencies)
+const pautaModule = require('./pauta')(dependencies)
 
 module.exports = {
   auth: () => authModule,
   system: () => systemModule,
-  votation: () => votationModule
+  votation: () => votationModule,
+  users: () => usersModule,
+  pauta: () => pautaModule
 }
