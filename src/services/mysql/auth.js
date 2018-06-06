@@ -7,18 +7,18 @@ const auth = deps => {
     authenticate: (cim, password) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
-        const queryString = 'SELECT id, email FROM users WHERE cim = ? AND password = ?'
+        const queryString = 'SELECT id, email, name, apto_votar FROM users WHERE cim = ? AND password = ?'
         const queryData = [cim, sha1(password)]
 
         console.log(queryData)
 
         connection.query(queryString, queryData, (error, results) => {
           if (error || !results.length) {
-            errorHandler(error, 'Falha ao localizar o usuário', reject)
+            errorHandler(error, 'Não conseguimos localizar o usuário, verifique se os dados estão corretos.', reject)
             return false
           }
 
-          const { email, id } = results[0]
+          const { email, id, name, apto_votar } = results[0]
 
           const token = jwt.sign(
             { email, id },
@@ -26,7 +26,7 @@ const auth = deps => {
             { expiresIn: 60 * 60 * 24 }
           )
 
-          resolve({ token, id: results[0].id })
+          resolve({ token, id: id, name: name, irregular: apto_votar })
         })
       })
     },
@@ -78,7 +78,20 @@ const auth = deps => {
             errorHandler(error, `Falha ao identificar a presença.`, reject)
             return false
           }
-          resolve({results})
+          resolve(results)
+        })
+      })
+    },
+    presencasave: (userid, sessaoid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('insert into presencas (id_usuario, id_sessao, created_at, updated_at) value (?, ?, current_date(), current_date())', [userid, sessaoid], (error, results) => {
+          if (error) {
+            errorHandler(error, `Falha ao salvar a presença.`, reject)
+            return false
+          }
+          resolve(results)
         })
       })
     }

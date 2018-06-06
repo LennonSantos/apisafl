@@ -26,6 +26,6 @@
     "sha1": "^1.1.1"
   },
   "dependencies": {
-    "bcrypt": "^2.0.1"
+    "socket.io-client": "^2.1.1"
   }
 }
