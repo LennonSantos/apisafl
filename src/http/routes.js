@@ -1,6 +1,6 @@
 const db = require('../services/mysql')
 // const server = require('http').createServer()
-const io = require('socket.io-client')('http://10.0.2.74:6379')
+const io = require('socket.io-client')('http://10.0.0.23:6379')
 
 const routes = (server) => {
   // realiza a autenticação do usuário
@@ -48,8 +48,17 @@ const routes = (server) => {
   // retorna a vesão da api
   server.get('/', async (req, res, next) => {
     try {
-      io.emit('votacao-channel:App\\Events\\VotacaoIniciarEvent', {teste: 'teste'})
-      console.log('teste')
+      // io.on('connect', socket => {
+      //   socket.broadcast.emit('votacao-channel:App\\Events\\VotacaoIniciarEvent', {teste: 'teste'})
+      //   console.log('aqui')
+      // })
+      // console.log('teste')
+      // console.log(io)
+      // const io = socket;
+
+      io.emit('voto', {voto: 'SIM'})
+
+      // console.log(io)
 
       res.send(await db.system().version())
     } catch (error) {
@@ -63,7 +72,7 @@ const routes = (server) => {
     try {
       const { temaid, voto, userid } = req.params
 
-      // io.emmit('votacao-channel:App\\Events\\VotacaoIniciarEvent', {teste: 'teste'})
+      io.emit('voto', {voto: voto})
 
       res.send(await db.votation().save(temaid, voto, userid))
     } catch (error) {
