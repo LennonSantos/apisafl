@@ -48,15 +48,7 @@ const routes = (server) => {
   // retorna a vesão da api
   server.get('/', async (req, res, next) => {
     try {
-      // io.on('connect', socket => {
-      //   socket.broadcast.emit('votacao-channel:App\\Events\\VotacaoIniciarEvent', {teste: 'teste'})
-      //   console.log('aqui')
-      // })
-      // console.log('teste')
-      // console.log(io)
-      // const io = socket;
-
-      io.emit('voto', {voto: 'SIM'})
+      // io.emit('voto', {voto: 'SIM'})
 
       // console.log(io)
 
@@ -72,9 +64,14 @@ const routes = (server) => {
     try {
       const { temaid, voto, userid } = req.params
 
-      io.emit('voto', {voto: voto})
+      const result = await db.votation().save(temaid, voto, userid)
 
-      res.send(await db.votation().save(temaid, voto, userid))
+      // se realmente votou emitir o evento do voto
+      if (result.voto.length) {
+        io.emit('voto', {voto: voto})
+      }
+
+      res.send(result)
     } catch (error) {
       res.send(422, error)
     }
