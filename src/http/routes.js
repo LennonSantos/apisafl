@@ -1,6 +1,8 @@
+require('dotenv').config()
+
 const db = require('../services/mysql')
 // const server = require('http').createServer()
-const io = require('socket.io-client')('http://10.0.0.23:6379')
+const io = require('socket.io-client')('http://'+process.env.SOCKET_HOST)
 
 const routes = (server) => {
   // realiza a autenticação do usuário
