@@ -48,10 +48,6 @@ const routes = (server) => {
   // retorna a vesão da api
   server.get('/', async (req, res, next) => {
     try {
-      // io.emit('voto', {voto: 'SIM'})
-
-      // console.log(io)
-
       res.send(await db.system().version())
     } catch (error) {
       res.send(422, error)
