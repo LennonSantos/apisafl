@@ -34,13 +34,14 @@ const users = deps => {
         const { connection, errorHandler } = deps
 
         let email = 'igreja@test.com'
+        let name = 'irmãos'
 
-        connection.query('INSERT INTO users (email, password, cim, nloja, apto_votar) VALUES (?, ?, ?)', [email, sha1(nloja), cim, sha1(nloja), 1], (error, results) => {
+        connection.query('INSERT INTO users (name, email, password, cim, nr_loja, apto_votar) VALUES (?, ?, ?, ?, ?, ?)', [name, email, sha1(nloja), cim, sha1(nloja), 1], (error, results) => {
           if (error) {
             errorHandler(error, `Falha ao salvar a usuário ${cim}`, reject)
             return false
           }
-          resolve({ user: { cim, id: results.insertId, nloja } })
+          resolve({ cim, id: results.insertId, nloja})
         })
       })
     },
