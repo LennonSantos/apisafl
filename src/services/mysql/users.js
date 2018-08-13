@@ -29,16 +29,18 @@ const users = deps => {
         })
       })
     },
-    save: (email, password) => {
+    save: (cim, nloja) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, sha1(password)], (error, results) => {
+        let email = 'igreja@test.com'
+
+        connection.query('INSERT INTO users (email, password, cim, nloja, apto_votar) VALUES (?, ?, ?)', [email, sha1(nloja), cim, sha1(nloja), 1], (error, results) => {
           if (error) {
-            errorHandler(error, `Falha ao salvar a usuário ${email}`, reject)
+            errorHandler(error, `Falha ao salvar a usuário ${cim}`, reject)
             return false
           }
-          resolve({ user: { email, id: results.insertId } })
+          resolve({ user: { cim, id: results.insertId, nloja } })
         })
       })
     },

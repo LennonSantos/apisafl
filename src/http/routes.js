@@ -3,6 +3,14 @@ const db = require('../services/mysql')
 const io = require('socket.io-client')('http://10.0.0.23:6379')
 
 const routes = (server) => {
+  // salvar user
+  server.post('user/save', async (req, res, next) => {
+    const {cim, nloja} = req.body
+
+    const user = await db.user().save(cim, nloja)
+
+    return user
+  })
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {
     try {
