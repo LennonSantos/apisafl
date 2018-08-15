@@ -26,7 +26,7 @@ const auth = deps => {
             { expiresIn: 60 * 60 * 24 }
           )
 
-          resolve({ token, id: id, name: name, irregular: apto_votar })
+          resolve({ token, id: id, name: name, apto_votar: apto_votar })
         })
       })
     },

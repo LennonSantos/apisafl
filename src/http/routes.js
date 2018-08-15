@@ -14,6 +14,12 @@ const routes = (server) => {
       // buscar o user pelo cim e password
       const user = await db.auth().authenticate(cim, password)
 
+      // se não esta apto a votar retorna erro
+      if (!user.apto_votar) {
+        res.send(422, {error: 'Deputado irregular.'})
+        return false
+      }
+
       // busca a sesão ativa
       const sessaoid = await db.auth().sessao()
 
@@ -40,7 +46,7 @@ const routes = (server) => {
       }
 
       // resposta do login
-      res.send({id: user.id, irregular: !user.irregular, nome: user.name, token: user.token, uuid: uuid, modelo: modelo, plataforma: plataforma, versao: versao, sessaoid: sessaoid[0].sessaoid, dispositivo: dispositivo})
+      res.send({id: user.id, nome: user.name, sessaoid: sessaoid[0].sessaoid})
     } catch (error) {
       res.send(422, error)
     }
