@@ -38,12 +38,9 @@ const routes = (server) => {
           res.send(422, {error: `Identificamos que sua conta esta vinculada ao dispositivo ${dispositivo[0].modelo}, procure a equipe de suporte mais próxima para vincular o novo aparelho.`})
         }
       }
-
-      // salva presença
-      const presenca = await db.auth().presenca(user.id, sessaoid[0].sessaoid)
-      if (!presenca[0]) {
-        await db.auth().presencasave(user.id, sessaoid[0].sessaoid)
-      }
+      
+      // 4 - informa que o usuario ja logou
+      await db.users().logado(user.id, 1)
 
       // resposta do login
       res.send({id: user.id, nome: user.name, sessaoid: sessaoid[0].sessaoid})

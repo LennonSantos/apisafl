@@ -55,6 +55,19 @@ const users = deps => {
         })
       })
     },
+    logado: (id, logado) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('UPDATE users SET logado = ? WHERE id = ?', [logado, id], (error, results) => {
+          if (error || !results.affectedRows) {
+            errorHandler(error, `Falha ao atualizar status logado.${id}`, reject)
+            return false
+          }
+          resolve({})
+        })
+      })
+    },
     del: (id) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
@@ -64,7 +77,7 @@ const users = deps => {
             errorHandler(error, `Falha ao remover a usuário de id ${id}`, reject)
             return false
           }
-          resolve({ message: 'usuário removida com sucesso!', affectedRows: results.affectedRows })
+          resolve({ message: 'usuário removido com sucesso!', affectedRows: results.affectedRows })
         })
       })
     }
