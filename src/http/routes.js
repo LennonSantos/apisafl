@@ -80,11 +80,13 @@ const routes = (server) => {
   })
 
   // responde os meus votos
-  server.get('/api/meusvotos/:userid', async (req, res, next) => {
+  server.post('/api/meusvotos', async (req, res, next) => {
     try {
-      const { userid } = req.params
+      const { userid, idvotos } = await req.body
 
-      res.send(await db.users().votos(userid))
+      res.send({userid: userid, idvotos: idvotos})
+
+      // res.send(await db.users().votos(userid))
     } catch (error) {
       res.send(422, error)
     }
