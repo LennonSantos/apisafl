@@ -84,9 +84,9 @@ const routes = (server) => {
     try {
       const { userid, idvotos } = await req.body
 
-      res.send({userid: userid, idvotos: idvotos})
+      // res.send({userid: userid, idvotos: idvotos})
 
-      // res.send(await db.users().votos(userid))
+      res.send(await db.users().votos(userid, idvotos))
     } catch (error) {
       res.send(422, error)
     }
@@ -97,6 +97,18 @@ const routes = (server) => {
   server.get('/api/pauta', async (req, res, next) => {
     try {
       res.send(await db.pauta().all())
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
+
+  // responde as presencas do usuario
+  server.post('/api/pauta', async (req, res, next) => {
+    try {
+      const {userid, idsessao} = req.body
+
+      res.send(await db.auth().presenca(userid, idsessao))
     } catch (error) {
       res.send(422, error)
     }
