@@ -34,7 +34,7 @@ const auth = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('select id as sessaoid from sessaos where ativo = 1', (error, results) => {
+        connection.query("select id as sessaoid from sessaos where status = 'andamento' ", (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao identificar a sessão ativa.', reject)
             return false
@@ -86,7 +86,7 @@ const auth = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('insert into presencas (id_usuario, id_sessao, created_at, updated_at) value (?, ?, current_date(), current_date())', [userid, sessaoid], (error, results) => {
+        connection.query('insert into presencas (id_usuario, id_sessao, created_at, updated_at) value (?, ?, now(), now())', [userid, sessaoid], (error, results) => {
           if (error) {
             errorHandler(error, `Falha ao salvar a presença.`, reject)
             return false

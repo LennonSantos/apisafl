@@ -23,13 +23,13 @@ const routes = (server) => {
       // busca a sesão ativa
       const sessaoid = await db.auth().sessao()
 
-      // 2 - verifica se existe sessão ativa
+      // 3 - verifica se existe sessão ativa
       if (!sessaoid[0]) {
-        res.send(422, {error: 'Não existe sessão ativa.'})
+        res.send(422, {error: 'Não existe sessão em andamento.'})
         return false
       }
 
-      // 3 - verifica se ja tem dispositivo cadastrado
+      // 4 - verifica se ja tem dispositivo cadastrado
       const dispositivo = await db.auth().dispositivo(cim)
       if (!dispositivo[0]) {
         await db.auth().dispositivosave(cim, uuid, modelo, plataforma, versao)
@@ -38,8 +38,14 @@ const routes = (server) => {
           res.send(422, {error: `Identificamos que sua conta esta vinculada ao dispositivo ${dispositivo[0].modelo}, procure a equipe de suporte mais próxima para vincular o novo aparelho.`})
         }
       }
+
+      // salva presença
+      const presenca = await db.auth().presenca(user.id, sessaoid[0].sessaoid)
+      if (!presenca[0]) {
+        await db.auth().presencasave(user.id, sessaoid[0].sessaoid)
+      }''
       
-      // 4 - informa que o usuario ja logou
+      // informa que o usuario ja logou
       await db.users().logado(user.id, 1)
 
       // resposta do login
@@ -54,6 +60,25 @@ const routes = (server) => {
   server.get('/', async (req, res, next) => {
     try {
       res.send(await db.system().version())
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
+
+  // verifica se existe votação em andamento
+  server.post('/api/andamento/votacao', async (req, res, next) => {
+    try {
+      // const { temaid, voto, userid } = req.params
+
+      const result = await db.votation().select()
+
+      // se realmente votou emitir o evento do voto
+      // if (result.voto.length) {
+      //   io.emit('voto', {voto: voto})
+      // }
+
+      res.send(result)
     } catch (error) {
       res.send(422, error)
     }
@@ -104,11 +129,23 @@ const routes = (server) => {
   })
 
   // responde as presencas do usuario
-  server.post('/api/pauta', async (req, res, next) => {
-    try {
-      const {userid, idsessao} = req.body
+  // server.post('/api/pauta', async (req, res, next) => {
+  //   try {
+  //     const {userid, idsessao} = req.body
 
-      res.send(await db.auth().presenca(userid, idsessao))
+  //     res.send(await db.auth().presenca(userid, idsessao))
+  //   } catch (error) {
+  //     res.send(422, error)
+  //   }
+  //   next()
+  // })
+
+  // retorna todas as presenças do usuario
+  server.post('/api/presencas', async (req, res, next) => {
+    try {
+      const {userid} = req.body
+
+      res.send(await db.users().presencas(userid))
     } catch (error) {
       res.send(422, error)
     }

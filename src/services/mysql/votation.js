@@ -19,6 +19,23 @@ const votation = deps => {
           resolve({ voto: voto })
         })
       })
+    },
+    // busca tema em andamento
+    select: () => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        const query = 'select now() as hora_atual,  id, descricao, hora_inicio, tempo_disponivel, qualificada from temas where status_votacao = 1 limit 1'
+
+        connection.query(query, [], (error, results) => {
+          if (error) {
+            errorHandler(error, `Erro ao procurar tema.`, reject)
+            return false
+          }
+
+          resolve({tema: results[0]})
+        })
+      })
     }
   }
 }

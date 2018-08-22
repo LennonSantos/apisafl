@@ -7,7 +7,7 @@ const users = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio from temas where status_votacao = 2 and visivel_voto = 1  and temas.id not in(?)', [userid, idvotos], (error, results) => {
+        connection.query("select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio, (select count(temas_usuario.id_tema) from temas_usuario where temas_usuario.id_tema = temas.id) as qtevotos, (select count(temas_usuario.id_tema) from temas_usuario where temas_usuario.id_tema = temas.id and temas_usuario.voto = 'SIM') as qtesim, (select count(temas_usuario.id_tema) from temas_usuario where temas_usuario.id_tema = temas.id and temas_usuario.voto = 'nao') as qtenao  from temas where status_votacao = 2 and visivel_voto = 1  and temas.id not in(?)", [userid, idvotos], (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao listar os votos.', reject)
             return false
@@ -78,6 +78,19 @@ const users = deps => {
             return false
           }
           resolve({ message: 'usuário removido com sucesso!', affectedRows: results.affectedRows })
+        })
+      })
+    },
+    presencas: (userid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('select s.nome as sessao, p.id_sessao, u.name from sessaos as s inner join presencas as p on p.id_sessao = s.id inner join users as u on u.id = p.id_usuario where u.id = ? order by p.created_at desc', [userid], (error, results) => {
+          if (error) {
+            errorHandler(error, `Falha ao selecionar as presenças do usuário ${userid}`, reject)
+            return false
+          }
+          resolve({ presencas: results })
         })
       })
     }
