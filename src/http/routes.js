@@ -43,7 +43,7 @@ const routes = (server) => {
       const presenca = await db.auth().presenca(user.id, sessaoid[0].sessaoid)
       if (!presenca[0]) {
         await db.auth().presencasave(user.id, sessaoid[0].sessaoid)
-      }''
+      }
       
       // informa que o usuario ja logou
       await db.users().logado(user.id, 1)
@@ -69,14 +69,9 @@ const routes = (server) => {
   // verifica se existe votação em andamento
   server.post('/api/andamento/votacao', async (req, res, next) => {
     try {
-      // const { temaid, voto, userid } = req.params
+      const { userid } = req.body
 
-      const result = await db.votation().select()
-
-      // se realmente votou emitir o evento do voto
-      // if (result.voto.length) {
-      //   io.emit('voto', {voto: voto})
-      // }
+      const result = await db.votation().select(userid)
 
       res.send(result)
     } catch (error) {
