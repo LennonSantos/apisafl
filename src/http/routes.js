@@ -104,7 +104,14 @@ const routes = (server) => {
     try {
       const { userid, idvotos } = await req.body
 
-      // res.send({userid: userid, idvotos: idvotos})
+      // presenca automatica
+      const presencaautomatica = await db.auth().presencaautomatica(userid)
+
+      // res.send(presencaautomatica)
+      if (presencaautomatica.presenca === 0) {
+        // salvar presenca automatica aqui aqui
+        await db.auth().presencasave(userid, presencaautomatica.sessaoid)
+      } // - presenca automatica
 
       res.send(await db.users().votos(userid, idvotos))
     } catch (error) {
@@ -124,16 +131,16 @@ const routes = (server) => {
   })
 
   // responde as presencas do usuario
-  // server.post('/api/pauta', async (req, res, next) => {
-  //   try {
-  //     const {userid, idsessao} = req.body
+  server.post('/api/presenca', async (req, res, next) => {
+    try {
+      const {userid} = req.body
 
-  //     res.send(await db.auth().presenca(userid, idsessao))
-  //   } catch (error) {
-  //     res.send(422, error)
-  //   }
-  //   next()
-  // })
+      res.send(await db.auth().presencaautomatica(userid))
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
 
   // retorna todas as presenças do usuario
   server.post('/api/presencas', async (req, res, next) => {

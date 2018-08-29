@@ -4,7 +4,7 @@ const pauta = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('select p.pauta, p.descricao from pautas as p inner join sessaos as s on p.id_sessao = s.id where s.ativo = 1', [], (error, results) => {
+        connection.query("select p.pauta, p.descricao from pautas as p inner join sessaos as s on p.id_sessao = s.id where s.status = 'andamento' limit 1", [], (error, results) => {
           if (error) {
             // verifica se o erro é relacionado ao voto duplo
             errorHandler(error, `Falha ao listar a pauta.`, reject)

@@ -82,6 +82,25 @@ const auth = deps => {
         })
       })
     },
+    presencaautomatica: (userid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query("select s.id as sessaoid, (select count(p.id_usuario) from presencas as p where p.id_usuario = ? and p.id_sessao = s.id) as presenca from sessaos as s where s.status = 'andamento'", [userid], (error, results) => {
+          if (error) {
+            errorHandler(error, `Falha ao identificar a presença.`, reject)
+            return false
+          }
+
+          if (results[0]) {
+            resolve({sessaoid: results[0].sessaoid, presenca: results[0].presenca})        
+          }
+          else {
+            resolve({})
+          }  
+        })
+      })
+    },
     presencasave: (userid, sessaoid) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
