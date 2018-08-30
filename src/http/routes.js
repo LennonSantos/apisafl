@@ -16,7 +16,7 @@ const routes = (server) => {
 
       // se não esta apto a votar retorna erro
       if (!user.apto_votar) {
-        res.send(422, {error: 'Deputado irregular.'})
+        res.send(422, {error: 'Você não esta apto a votar, verifique sua situação com a equipe de suporte.'})
         return false
       }
 
@@ -71,6 +71,13 @@ const routes = (server) => {
     try {
       const { userid } = req.body
 
+      // presenca automatica
+      const presencaautomatica = await db.auth().presencaautomatica(userid)
+      if (presencaautomatica.presenca === 0) {
+        // salvar presenca automatica aqui aqui
+        await db.auth().presencasave(userid, presencaautomatica.sessaoid)
+      } // - presenca automatica
+
       const result = await db.votation().select(userid)
 
       res.send(result)
@@ -84,6 +91,13 @@ const routes = (server) => {
   server.get('/api/votacao/votar/:temaid/:voto/:userid', async (req, res, next) => {
     try {
       const { temaid, voto, userid } = req.params
+
+      // presenca automatica
+      const presencaautomatica = await db.auth().presencaautomatica(userid)
+      if (presencaautomatica.presenca === 0) {
+        // salvar presenca automatica aqui aqui
+        await db.auth().presencasave(userid, presencaautomatica.sessaoid)
+      } // - presenca automatica
 
       const result = await db.votation().save(temaid, voto, userid)
 
@@ -106,8 +120,6 @@ const routes = (server) => {
 
       // presenca automatica
       const presencaautomatica = await db.auth().presencaautomatica(userid)
-
-      // res.send(presencaautomatica)
       if (presencaautomatica.presenca === 0) {
         // salvar presenca automatica aqui aqui
         await db.auth().presencasave(userid, presencaautomatica.sessaoid)
@@ -131,21 +143,28 @@ const routes = (server) => {
   })
 
   // responde as presencas do usuario
-  server.post('/api/presenca', async (req, res, next) => {
-    try {
-      const {userid} = req.body
+  // server.post('/api/presenca', async (req, res, next) => {
+  //   try {
+  //     const {userid} = req.body
 
-      res.send(await db.auth().presencaautomatica(userid))
-    } catch (error) {
-      res.send(422, error)
-    }
-    next()
-  })
+  //     res.send(await db.auth().presencaautomatica(userid))
+  //   } catch (error) {
+  //     res.send(422, error)
+  //   }
+  //   next()
+  // })
 
   // retorna todas as presenças do usuario
   server.post('/api/presencas', async (req, res, next) => {
     try {
       const {userid} = req.body
+
+      // presenca automatica
+      const presencaautomatica = await db.auth().presencaautomatica(userid)
+      if (presencaautomatica.presenca === 0) {
+        // salvar presenca automatica aqui aqui
+        await db.auth().presencasave(userid, presencaautomatica.sessaoid)
+      } // - presenca automatica
 
       res.send(await db.users().presencas(userid))
     } catch (error) {
