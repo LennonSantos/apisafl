@@ -34,7 +34,7 @@ const auth = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query("select id as sessaoid from sessaos where status = 'andamento' ", (error, results) => {
+        connection.query("select id as sessaoid, nome as sessaonome from sessaos where status = 'andamento' ", (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao identificar a sessão ativa.', reject)
             return false
