@@ -56,6 +56,19 @@ const auth = deps => {
         })
       })
     },
+    dispositivo2: (uuid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        connection.query('select cim, uuid from user_device where uuid = ?  and ativo = 1', [uuid], (error, results) => {
+          if (error) {
+            errorHandler(error, 'Falha ao identificar o disponitivo pelo uuid.', reject)
+            return false
+          }
+          resolve(results)
+        })
+      })
+    },
     dispositivosave: (cim, uuid, modelo, plataforma, versao) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps

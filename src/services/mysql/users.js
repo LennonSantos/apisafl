@@ -84,10 +84,10 @@ const users = deps => {
     presencas: (userid) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
-
-        connection.query('select s.nome as sessao, p.id_sessao, u.name from sessaos as s inner join presencas as p on p.id_sessao = s.id inner join users as u on u.id = p.id_usuario where u.id = ? order by p.created_at desc', [userid], (error, results) => {
+        // connection.query('select s.nome as sessao, p.id_sessao, u.name from sessaos as s inner join presencas as p on p.id_sessao = s.id inner join users as u on u.id = p.id_usuario where u.id = ? order by p.created_at desc', [userid], (error, results) => {
+        connection.query("select s.id as id_sessao, s.nome as sessao, (select count(p.id_sessao) from presencas as p where p.id_sessao = s.id and p.id_usuario = ?) as presenca from sessaos as s where s.status in('andamento', 'finalizado') order by s.created_at desc", [userid], (error, results) => {
           if (error) {
-            errorHandler(error, `Falha ao selecionar as presenças do usuário ${userid}`, reject)
+            errorHandler(error, `Falha ao selecionar as presenças do usuário ${userid}. errod ${error}`, reject)
             return false
           }
           resolve({ presencas: results })

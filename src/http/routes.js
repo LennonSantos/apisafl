@@ -30,7 +30,13 @@ const routes = (server) => {
       }
 
       // 4 - verifica se ja tem dispositivo cadastrado
-      const dispositivo = await db.auth().dispositivo(cim)
+      const dispositivo2 = await db.auth().dispositivo2(uuid)
+      if (dispositivo2[0] && dispositivo2[0].cim.toString() !== cim.toString()) {
+        res.send(422, {error: 'Identificamos que o seu dipositivo esta vinculada a uma conta ativa com o cim ' + dispositivo2[0].cim + ', procure a equipe de suporte para mais informações.'})
+        return false
+      } 
+      // 4 - verifica se ja tem dispositivo cadastrado
+      const dispositivo = await db.auth().dispositivo(cim, uuid)
       if (!dispositivo[0]) {
         await db.auth().dispositivosave(cim, uuid, modelo, plataforma, versao)
       } else {
