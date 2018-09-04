@@ -37,6 +37,27 @@ const votation = deps => {
           resolve({tema: results[0]})
         })
       })
+    },
+    verificaUuid: (userid, uuid) => {
+      return new Promise((resolve, reject) => {
+        const { connection, errorHandler } = deps
+
+        const query = 'select ud.uuid from user_device as ud inner join users as u on ud.cim = u.cim  where ud.ativo = 1 and u.id = ?'
+
+        connection.query(query, [userid], (error, results) => {
+          if (error) {
+            errorHandler(error, `Erro ao verificar dispositivo.`, reject)
+            return false
+          }
+
+          if (results[0].uuid.toString() !== uuid.toString()) {
+            resolve({error: true})
+          }
+          else {
+            resolve({error: false})
+          }
+        })
+      })
     }
   }
 }

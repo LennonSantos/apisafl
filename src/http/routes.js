@@ -94,9 +94,15 @@ const routes = (server) => {
   })
 
   // realiza a votação do sistema
-  server.get('/api/votacao/votar/:temaid/:voto/:userid', async (req, res, next) => {
+  server.get('/api/votacao/votar/:temaid/:voto/:userid/:uuid', async (req, res, next) => {
     try {
-      const { temaid, voto, userid } = req.params
+      const { temaid, voto, userid, uuid } = req.params
+
+      const verificaUuid = await db.votation().verificaUuid(userid, uuid)
+      if (verificaUuid.error) {
+        res.send(422, {error: 'Erro! Este usuário esta registrado em outro dispositivo.'})
+        return false
+      }
 
       // presenca automatica
       const presencaautomatica = await db.auth().presencaautomatica(userid)
@@ -113,8 +119,9 @@ const routes = (server) => {
       }
 
       res.send(result)
+      // res.send({})
     } catch (error) {
-      res.send(422, error)
+      res.send(422, {teste: userid})
     }
     next()
   })
