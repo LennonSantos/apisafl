@@ -7,10 +7,8 @@ const auth = deps => {
     authenticate: (cim, password) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
-        const queryString = 'SELECT id, email, name, apto_votar FROM users WHERE cim = ? AND password = ?'
+        const queryString = 'SELECT id, email, name, apto_votar, nome_loja, uf_loja, cidade, year(inicio_mandato) as inicio, year(termino_mandato) as termino  FROM users WHERE cim = ? AND password = ?'
         const queryData = [cim, sha1(password)]
-
-        console.log(queryData)
 
         connection.query(queryString, queryData, (error, results) => {
           if (error || !results.length) {
@@ -18,7 +16,7 @@ const auth = deps => {
             return false
           }
 
-          const { email, id, name, apto_votar } = results[0]
+          const { email, id, name, apto_votar, nome_loja, uf_loja, cidade, inicio, termino } = results[0]
 
           const token = jwt.sign(
             { email, id },
@@ -26,7 +24,7 @@ const auth = deps => {
             { expiresIn: 60 * 60 * 24 }
           )
 
-          resolve({ token, id: id, name: name, apto_votar: apto_votar })
+          resolve({ token, id: id, name: name, apto_votar: apto_votar, nome_loja, uf_loja, cidade, inicio, termino })
         })
       })
     },
