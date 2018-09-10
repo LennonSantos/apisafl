@@ -55,7 +55,7 @@ const routes = (server) => {
       await db.users().logado(user.id, 1)
 
       // resposta do login
-      res.send({id: user.id, nome: user.name, sessaoid: sessaoid[0].sessaoid, sessaonome: sessaoid[0].sessaonome, nomeloja: user.nome_loja, oriente: `${user.cidade} - ${user.uf_loja}`, mandato: `${user.inicio}/${user.termino}`})
+      res.send({id: user.id, nome: user.name, sessaoid: sessaoid[0].sessaoid, sessaonome: sessaoid[0].sessaonome, nomeloja: `${user.nome_loja} - ${password}`, oriente: `${user.cidade} - ${user.uf_loja}`, mandato: `${user.inicio}/${user.termino}`})
     } catch (error) {
       res.send(422, error)
     }
