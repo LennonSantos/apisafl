@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const db = require('../services/mysql')
 // const server = require('http').createServer()
-const io = require('socket.io-client')('http://'+process.env.SOCKET_HOST)
+const io = require('socket.io-client')('http://' + process.env.SOCKET_HOST)
 
 const routes = (server) => {
   // realiza a autenticação do usuário
@@ -34,7 +34,7 @@ const routes = (server) => {
       if (dispositivo2[0] && dispositivo2[0].cim.toString() !== cim.toString()) {
         res.send(422, {error: 'Identificamos que o seu dipositivo esta vinculada a uma conta ativa com o cim ' + dispositivo2[0].cim + ', procure a equipe de suporte para mais informações.'})
         return false
-      } 
+      }
       // 4 - verifica se ja tem dispositivo cadastrado
       const dispositivo = await db.auth().dispositivo(cim, uuid)
       if (!dispositivo[0]) {
@@ -50,7 +50,7 @@ const routes = (server) => {
       if (!presenca[0]) {
         await db.auth().presencasave(user.id, sessaoid[0].sessaoid)
       }
-      
+
       // informa que o usuario ja logou
       await db.users().logado(user.id, 1)
 
@@ -121,7 +121,7 @@ const routes = (server) => {
       res.send(result)
       // res.send({})
     } catch (error) {
-      res.send(422, {teste: userid})
+      res.send(422, {error: error})
     }
     next()
   })
