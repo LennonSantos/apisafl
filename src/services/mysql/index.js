@@ -20,11 +20,13 @@ const systemModule = require('./system')(dependencies)
 const votationModule = require('./votation')(dependencies)
 const usersModule = require('./users')(dependencies)
 const pautaModule = require('./pauta')(dependencies)
+const sessoesModule = require('./sessoes')(dependencies)
 
 module.exports = {
   auth: () => authModule,
   system: () => systemModule,
   votation: () => votationModule,
   users: () => usersModule,
-  pauta: () => pautaModule
+  pauta: () => pautaModule,
+  sessoes: () => sessoesModule
 }

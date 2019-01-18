@@ -4,7 +4,12 @@ const db = require('../services/mysql')
 // const server = require('http').createServer()
 const io = require('socket.io-client')('http://' + process.env.SOCKET_HOST)
 
+const sessoes = require('./modules/sessoes')
+
 const routes = (server) => {
+  // rota das sessoes
+  sessoes(server)
+
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {
     try {
@@ -154,18 +159,6 @@ const routes = (server) => {
     }
     next()
   })
-
-  // responde as presencas do usuario
-  // server.post('/api/presenca', async (req, res, next) => {
-  //   try {
-  //     const {userid} = req.body
-
-  //     res.send(await db.auth().presencaautomatica(userid))
-  //   } catch (error) {
-  //     res.send(422, error)
-  //   }
-  //   next()
-  // })
 
   // retorna todas as presenças do usuario
   server.post('/api/presencas', async (req, res, next) => {

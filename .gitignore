@@ -1,3 +1,4 @@
 .env
 node_modules
 curso-spa.paw
+socket/node_modules
