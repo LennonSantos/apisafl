@@ -2,7 +2,9 @@ var server = require('http').createServer()
 var io = require('socket.io')(server)
 
 io.on('connection', (socket) => {
-  socket.on('message', (data) => {
+  socket.on('iniciar-votacao', (data) => {
+    io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', data)
+    console.log(data)
   })
 
   socket.on('disconnect', () => {

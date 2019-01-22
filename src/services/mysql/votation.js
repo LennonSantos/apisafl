@@ -52,11 +52,28 @@ const votation = deps => {
 
           if (results[0].uuid.toString() !== uuid.toString()) {
             resolve({error: true})
-          }
-          else {
+          } else {
             resolve({error: false})
           }
         })
+      })
+    },
+    iniciar: (tema) => {
+      return new Promise((resolve, reject) => {
+        const { knex, errorHandler } = deps
+
+        const agora = new Date()
+
+        knex('temas')
+          .where('id', tema.id)
+          .update({hora_inicio: agora, status_votacao: 1})
+          .then((resp) => {
+            tema.hora_inicio = agora
+            resolve(tema)
+          })
+          .catch((error) => {
+            errorHandler(error, `Falha ao registrar hora de inicio da votação.`, reject)
+          })
       })
     }
   }

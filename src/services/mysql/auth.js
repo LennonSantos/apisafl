@@ -104,11 +104,10 @@ const auth = deps => {
           }
 
           if (results[0]) {
-            resolve({sessaoid: results[0].sessaoid, presenca: results[0].presenca})        
-          }
-          else {
+            resolve({sessaoid: results[0].sessaoid, presenca: results[0].presenca})
+          } else {
             resolve({})
-          }  
+          }
         })
       })
     },

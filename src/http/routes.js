@@ -5,10 +5,12 @@ const db = require('../services/mysql')
 const io = require('socket.io-client')('http://' + process.env.SOCKET_HOST)
 
 const sessoes = require('./modules/sessoes')
+const temas = require('./modules/temas')
 
 const routes = (server) => {
   // rota das sessoes
   sessoes(server)
+  temas(server)
 
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {
@@ -175,6 +177,20 @@ const routes = (server) => {
       res.send(await db.users().presencas(userid))
     } catch (error) {
       res.send(422, error)
+    }
+    next()
+  })
+
+  // RESPONSAVEL POR INICIAR A VOTAÇAO
+  server.post('/votacao/iniciar', async (req, res, next) => {
+    try {
+      const result = await db.votation().iniciar(req.body)
+
+      io.emit('iniciar-votacao', result)
+
+      res.send(result)
+    } catch (error) {
+      res.send(422, {msg: 'Não foi possível iniciar a votação!', error: error})
     }
     next()
   })

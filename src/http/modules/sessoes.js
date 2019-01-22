@@ -56,4 +56,13 @@ module.exports = function sessoes (server) {
     }
     next()
   })
+
+  server.get('/api/sessoesatual', async (req, res, next) => {
+    try {
+      res.send(await db.sessoes().atual())
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
 }

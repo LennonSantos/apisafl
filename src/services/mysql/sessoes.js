@@ -86,6 +86,25 @@ const sessoes = deps => {
           resolve({msg: 'Desativado com sucesso!'})
         })
       })
+    },
+    atual: () => {
+      return new Promise((resolve, reject) => {
+        const { knex, errorHandler } = deps
+
+        knex.table('sessaos').where('status', 'andamento').where('ativo', 1).first('id', 'nome')
+          .then(sessao => {
+            knex.where('id_sessao', sessao.id).where('ativo', 1).select().table('temas')
+              .then((temas) => {
+                resolve({sessao: sessao, temas: temas})
+              })
+              .catch((error) => {
+                errorHandler(error, `Falha ao buscar os temas da sessão atual.`, reject)
+              })
+          })
+          .catch((error) => {
+            errorHandler(error, `Falha ao buscar a sessão atual.`, reject)
+          })
+      })
     }
   }
 }
