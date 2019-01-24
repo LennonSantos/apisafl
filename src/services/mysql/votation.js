@@ -69,10 +69,29 @@ const votation = deps => {
           .update({hora_inicio: agora, status_votacao: 1})
           .then((resp) => {
             tema.hora_inicio = agora
+            tema.hora_atual = agora
+            tema.status_votacao = 1
             resolve(tema)
           })
           .catch((error) => {
             errorHandler(error, `Falha ao registrar hora de inicio da votação.`, reject)
+          })
+      })
+    },
+    finalizar: (id, votos) => {
+      return new Promise((resolve, reject) => {
+        const { knex, errorHandler } = deps
+
+        votos.status_votacao = 2
+
+        knex('temas')
+          .where('id', id)
+          .update(votos)
+          .then((resp) => {
+            resolve({})
+          })
+          .catch((error) => {
+            errorHandler(error, `Falha ao finalizar votação.`, reject)
           })
       })
     }

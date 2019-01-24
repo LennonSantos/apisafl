@@ -1,12 +1,52 @@
 var server = require('http').createServer()
 var io = require('socket.io')(server)
 
-io.on('connection', (socket) => {
-  socket.on('iniciar-votacao', (data) => {
+let tema = {}
+let votos = []
+let resultadoVotos = []
+
+io.on('connection', socket => {
+  // canal para iniciar votação
+  socket.on('iniciar-votacao', data => {
+    tema = data // carrega o tema atual
+    votos = [] // zera os votos
     io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', data)
-    console.log(data)
   })
 
+  socket.on('finalizar-votacao', () => {
+    tema.status_votacao = 2
+
+    io.emit('tema', tema)
+    // emite um evento para atualizar os dados
+    io.emit('atualizar', true)
+  })
+
+  socket.on('voto', data => {
+    if (tema.status_votacao === 1) {
+      votos.push(data)
+
+      resultadoVotos = {
+        sim: votos.filter(el => el.voto === 'SIM').length,
+        nao: votos.filter(el => el.voto === 'NAO').length,
+        abstenho: votos.filter(el => el.voto === 'ABSTENHO').length
+      }
+
+      io.emit('votos', resultadoVotos)
+    }
+  })
+
+  // socket.on('votacao', () => {
+  //   io.emit('tema', tema)
+  // })
+
+  // emite o valor de tema
+  tema.hora_atual = new Date()
+  io.emit('tema', tema)
+  io.emit('votos', resultadoVotos)
+
+  // console.log(tema)
+
+  // ouve o user desconectado
   socket.on('disconnect', () => {
   })
 })

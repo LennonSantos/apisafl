@@ -194,6 +194,30 @@ const routes = (server) => {
     }
     next()
   })
+
+  // RESPONSAVEL POR FINALIZAR A VOTAÇAO
+  server.post('/votacao/finalizar/:id', async (req, res, next) => {
+    try {
+      const { id } = req.params
+
+      const {sim, nao, abstenho} = req.body
+
+      const votos = {
+        quantidade_nao: nao,
+        quantidade_sim: sim,
+        quantidade_abstensao: abstenho
+      }
+
+      await db.votation().finalizar(id, votos)
+
+      io.emit('finalizar-votacao')
+
+      res.send({msg: 'Votação finalizada com sucesso!!!'})
+    } catch (error) {
+      res.send(422, {msg: `Não foi possível finalizar a votação! ${error}`, error: error})
+    }
+    next()
+  })
 }
 
 module.exports = routes
