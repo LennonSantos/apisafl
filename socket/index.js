@@ -11,10 +11,14 @@ io.on('connection', socket => {
     tema = data // carrega o tema atual
     votos = [] // zera os votos
     io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', data)
+    io.emit('votos', {sim: 0, nao: 0, abstenho: 0})
   })
 
   socket.on('finalizar-votacao', () => {
     tema.status_votacao = 2
+    tema.quantidade_sim = resultadoVotos.sim
+    tema.quantidade_nao = resultadoVotos.nao
+    tema.quantidade_abstensao = resultadoVotos.abstenho
 
     io.emit('tema', tema)
     // emite um evento para atualizar os dados
@@ -35,14 +39,11 @@ io.on('connection', socket => {
     }
   })
 
-  // socket.on('votacao', () => {
-  //   io.emit('tema', tema)
-  // })
-
-  // emite o valor de tema
-  tema.hora_atual = new Date()
-  io.emit('tema', tema)
-  io.emit('votos', resultadoVotos)
+  socket.on('start', () => {
+    tema.hora_atual = new Date()
+    io.emit('tema', tema)
+    io.emit('votos', resultadoVotos)
+  })
 
   // console.log(tema)
 
