@@ -4,13 +4,19 @@ var io = require('socket.io')(server)
 let tema = {}
 let votos = []
 let resultadoVotos = []
+let telaEspera = false
 
 io.on('connection', socket => {
+  socket.on('tela-espera', data => {
+    telaEspera = data
+
+    io.emit('tela-espera-value', telaEspera)
+  })
   // canal para iniciar votação
   socket.on('iniciar-votacao', data => {
     tema = data // carrega o tema atual
     votos = [] // zera os votos
-    io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', data)
+    io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', tema)
     io.emit('votos', {sim: 0, nao: 0, abstenho: 0})
   })
 
@@ -73,7 +79,7 @@ io.on('connection', socket => {
 //   console.log(err)
 // })
 
-server.listen(6379, '127.0.0.1', function () {
+server.listen(6379, '10.0.0.117', function () {
   // server.listen(3000,'10.0.0.23', function(){
   console.log('listening on port 6379')
 })
