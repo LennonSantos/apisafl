@@ -7,7 +7,7 @@ const users = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query("select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio from temas where status_votacao = 2 and visivel_voto = 1  and temas.id not in(?)", [userid, idvotos], (error, results) => {
+        connection.query('select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio from temas where status_votacao = 2 and visivel_voto = 1  and temas.id not in(?)', [userid, idvotos], (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao listar os votos.', reject)
             return false
@@ -20,39 +20,67 @@ const users = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('SELECT id, email FROM users', (error, results) => {
+        connection.query('SELECT * FROM users', (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao listar as usuários', reject)
             return false
           }
-          resolve({ users: results })
+          resolve(results)
         })
       })
     },
-    save: (email, password) => {
+    index: (cim) => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, sha1(password)], (error, results) => {
+        connection.query('select * from users where cim = ?', [cim], (error, results) => {
           if (error) {
-            errorHandler(error, `Falha ao salvar a usuário ${email}`, reject)
+            errorHandler(error, `Falha ao lista o usuario de cim ${cim}.`, reject)
+
             return false
           }
-          resolve({ user: { email, id: results.insertId } })
+
+          resolve(results)
         })
       })
     },
-    update: (id, password) => {
+    save: (user) => {
       return new Promise((resolve, reject) => {
-        const { connection, errorHandler } = deps
+        const { knex, errorHandler } = deps
 
-        connection.query('UPDATE users SET password = ? WHERE id = ?', [sha1(password), id], (error, results) => {
-          if (error || !results.affectedRows) {
-            errorHandler(error, `Falha ao atualizar a usuário de id ${id}`, reject)
-            return false
-          }
-          resolve({ user: { id }, affectedRows: results.affectedRows })
-        })
+        user.password = sha1(user.nr_loja)
+        user.created_at = new Date()
+        user.updated_at = new Date()
+
+        knex('users').insert(user)
+          .then((resp) => {
+            resolve({msg: 'Salvo com sucesso!'})
+          })
+          .catch((error) => {
+            errorHandler(error, `Falha ao salvar o usuario. ${error}`, reject)
+          })
+      })
+    },
+    update: (id, values) => {
+      return new Promise((resolve, reject) => {
+        const { knex, errorHandler } = deps
+
+        values.updated_at = new Date()
+        values.password = sha1(values.nr_loja)
+
+        delete values['__index']
+        delete values['id']
+        delete values['created_at']
+
+        knex('users')
+          .where('id', id)
+          .update(values)
+          .then((resp) => {
+            resolve({msg: 'Atualizado com sucesso!'})
+          })
+          .catch((error) => {
+            errorHandler(error, `Falha ao atualizar o usuário. ${error}`, reject)
+          })
       })
     },
     logado: (id, logado) => {

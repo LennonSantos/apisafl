@@ -6,11 +6,13 @@ const io = require('socket.io-client')('http://' + process.env.SOCKET_HOST)
 
 const sessoes = require('./modules/sessoes')
 const temas = require('./modules/temas')
+const users = require('./modules/users')
 
 const routes = (server) => {
   // rota das sessoes
   sessoes(server)
   temas(server)
+  users(server)
 
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {

@@ -19,8 +19,7 @@ const connection = mysqlServer.createConnection({
 })
 
 const errorHandler = (error, msg, rejectFunction) => {
-  if (error) console.error(error)
-  rejectFunction({ error: msg })
+  if (error) rejectFunction({ error: msg })
 }
 
 const dependencies = { connection, errorHandler, knex }

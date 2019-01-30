@@ -2,7 +2,7 @@
 const db = require('../../services/mysql')
 
 module.exports = function users (server) {
-  server.get('usuario', async (req, res, next) => {
+  server.get('/api/usuario', async (req, res, next) => {
     try {
       res.send(await db.users().all())
     } catch (error) {
@@ -11,36 +11,35 @@ module.exports = function users (server) {
     next()
   })
 
-  server.get('usuario/:id', async (req, res, next) => {
+  server.get('/api/usuario/:cim', async (req, res, next) => {
     try {
-      res.send(await db.users().one(req.params.id))
+      res.send(await db.users().index(req.params.cim))
     } catch (error) {
       res.send(error)
     }
     next()
   })
 
-  server.post('usuario', async (req, res, next) => {
-    const { email, password } = req.body
+  server.post('/api/usuario', async (req, res, next) => {
     try {
-      res.send(await db.users().save(email, password))
+      res.send(await db.users().save(req.body))
     } catch (error) {
       res.send(422, error)
     }
     next()
   })
 
-  server.put('usuario', async (req, res, next) => {
-    const { id, name } = req.body
+  server.put('/api/usuario/:id', async (req, res, next) => {
+    const { id } = req.params
     try {
-      res.send(await db.users().update(id, name))
+      res.send(await db.users().update(id, req.body))
     } catch (error) {
       res.send(422, error)
     }
     next()
   })
 
-  server.del('usuario/:id', async (req, res, next) => {
+  server.del('/api/usuario/:id', async (req, res, next) => {
     const { id } = req.params
     try {
       res.send(await db.users().del(id))
