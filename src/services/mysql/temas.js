@@ -80,10 +80,10 @@ const temas = deps => {
           .where('id', id)
           .update({ativo: 0, updated_at: updatedAt})
           .then((resp) => {
-            resolve({msg: 'Desativado com sucesso!'})
+            resolve(resp)
           })
           .catch((error) => {
-            errorHandler(error, `Falha ao desativar a sessão.`, reject)
+            errorHandler(error, `Falha ao buscar os dispositivos.`, reject)
           })
       })
     }

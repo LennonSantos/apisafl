@@ -7,12 +7,16 @@ const io = require('socket.io-client')('http://' + process.env.SOCKET_HOST)
 const sessoes = require('./modules/sessoes')
 const temas = require('./modules/temas')
 const users = require('./modules/users')
+const dispositivos = require('./modules/dispositivos')
+const relatorio = require('./modules/relatorio')
 
 const routes = (server) => {
   // rota das sessoes
   sessoes(server)
   temas(server)
   users(server)
+  dispositivos(server)
+  relatorio(server)
 
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {
@@ -154,10 +158,37 @@ const routes = (server) => {
     next()
   })
 
-  // responde os meus votos
+  // responde a pauta da sessão em andamento
   server.get('/api/pauta', async (req, res, next) => {
     try {
+      res.send(await db.pauta().andamento())
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
+
+  server.get('/api/pauta/all', async (req, res, next) => {
+    try {
       res.send(await db.pauta().all())
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
+
+  server.post('/api/pauta', async (req, res, next) => {
+    try {
+      res.send(await db.pauta().save(req.body))
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
+
+  server.put('/api/pauta/:id', async (req, res, next) => {
+    try {
+      res.send(await db.pauta().update(req.params.id, req.body))
     } catch (error) {
       res.send(422, error)
     }
