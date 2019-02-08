@@ -32,6 +32,7 @@ const pautaModule = require('./pauta')(dependencies)
 const sessoesModule = require('./sessoes')(dependencies)
 const temasModule = require('./temas')(dependencies)
 const dispositivoModule = require('./dispositivo')(dependencies)
+const relatorioModule = require('./relatorio')(dependencies)
 
 module.exports = {
   auth: () => authModule,
@@ -41,5 +42,6 @@ module.exports = {
   pauta: () => pautaModule,
   sessoes: () => sessoesModule,
   temas: () => temasModule,
-  dispositivo: () => dispositivoModule
+  dispositivo: () => dispositivoModule,
+  relatorio: () => relatorioModule
 }

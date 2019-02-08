@@ -10,4 +10,13 @@ module.exports = function relatorio (server) {
     }
     next()
   })
+
+  server.get('/api/relatorio/resumo/:idsessao', async (req, res, next) => {
+    try {
+      res.send(await db.relatorio().resumo(req.params.idsessao))
+    } catch (error) {
+      res.send(422, error)
+    }
+    next()
+  })
 }
