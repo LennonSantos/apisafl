@@ -33,6 +33,7 @@ const sessoesModule = require('./sessoes')(dependencies)
 const temasModule = require('./temas')(dependencies)
 const dispositivoModule = require('./dispositivo')(dependencies)
 const relatorioModule = require('./relatorio')(dependencies)
+const presencaModule = require('./presenca')(dependencies)
 
 module.exports = {
   auth: () => authModule,
@@ -43,5 +44,6 @@ module.exports = {
   sessoes: () => sessoesModule,
   temas: () => temasModule,
   dispositivo: () => dispositivoModule,
-  relatorio: () => relatorioModule
+  relatorio: () => relatorioModule,
+  presenca: () => presencaModule
 }

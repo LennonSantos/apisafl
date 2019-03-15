@@ -20,7 +20,7 @@ const pauta = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('select * from pautas', [], (error, results) => {
+        connection.query('select p.* from pautas as p inner join sessaos as s on s.id = p.id_sessao where s.ativo = 1', [], (error, results) => {
           if (error) {
             // verifica se o erro é relacionado ao voto duplo
             errorHandler(error, `Falha ao listar as pautas.`, reject)

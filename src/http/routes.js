@@ -9,6 +9,7 @@ const temas = require('./modules/temas')
 const users = require('./modules/users')
 const dispositivos = require('./modules/dispositivos')
 const relatorio = require('./modules/relatorio')
+const presenca = require('./modules/presenca')
 
 const routes = (server) => {
   // rota das sessoes
@@ -17,6 +18,7 @@ const routes = (server) => {
   users(server)
   dispositivos(server)
   relatorio(server)
+  presenca(server)
 
   // realiza a autenticação do usuário
   server.post('/api/authenticate', async (req, res, next) => {

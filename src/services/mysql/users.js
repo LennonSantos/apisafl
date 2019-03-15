@@ -7,7 +7,7 @@ const users = deps => {
       return new Promise((resolve, reject) => {
         const { connection, errorHandler } = deps
 
-        connection.query('select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio from temas where status_votacao = 2 and visivel_voto = 1  and temas.id not in(?)', [userid, idvotos], (error, results) => {
+        connection.query('select temas.id, temas.descricao, (select voto from temas_usuario where id_usuario = ? and id_tema = temas.id) as voto, temas.hora_inicio from temas where status_votacao in(1, 2) and visivel_voto = 1  and temas.id not in(?)', [userid, idvotos], (error, results) => {
           if (error) {
             errorHandler(error, 'Falha ao listar os votos.', reject)
             return false
