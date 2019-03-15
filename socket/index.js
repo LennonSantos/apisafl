@@ -5,15 +5,26 @@ let tema = {}
 let votos = []
 let resultadoVotos = []
 let telaEspera = false
+let previa = ''
 
 io.on('connection', socket => {
   socket.on('tela-espera', data => {
     telaEspera = data
-
+    previa = ''
+    io.emit('previa-value', '')
     io.emit('tela-espera-value', telaEspera)
   })
+
+  socket.on('previa', data => {
+    previa = data
+    telaEspera = false
+    io.emit('tela-espera-value', '')
+    io.emit('previa-value', previa)
+  })
+
   // canal para iniciar votação
   socket.on('iniciar-votacao', data => {
+    io.emit('previa-value', '')
     tema = data // carrega o tema atual
     votos = [] // zera os votos
     io.emit('andamento-channel:App\\Events\\VotacaoAndamentoEvent', tema)
@@ -58,28 +69,7 @@ io.on('connection', socket => {
   })
 })
 
-// var Redis = require('ioredis')
-// var redis = new Redis()
-
-// // redis.subscribe('votacao-channel')
-// redis.psubscribe('*') // multiple channels
-
-// // redis.on('message', function (channel, message) {
-// redis.on('pmessage', function (subscribed, channel, message) { // multiple channels
-//   console.log(channel, message)
-//   // 3. Use socket.io to emit to all clients.
-
-//   message = JSON.parse(message)
-//   io.emit(channel + ':' + message.event, message.data) // test-channel:UserSignedUp
-
-//   console.log('redis on')
-// })
-
-// redis.on('error', err => {
-//   console.log(err)
-// })
-
-server.listen(6379, '10.0.0.117', function () {
+server.listen(6379, '10.0.0.23', function () {
   // server.listen(3000,'10.0.0.23', function(){
   console.log('listening on port 6379')
 })
